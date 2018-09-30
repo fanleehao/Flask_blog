@@ -18,7 +18,10 @@ class ProdConfig(Config):
 
 class DevConfig(Config):
     """开发环境配置"""
-    pass
+    DEBUG = True
+    # mysql连接
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root123@127.0.0.1:3306/flask_blog'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class TestConfig(Config):
     """测试环境配置"""
