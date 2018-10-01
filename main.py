@@ -17,10 +17,13 @@ app = Flask(__name__)
 # 不使用 app.config['DEBUG'] 是因为这样可以加载 class DevConfig 的配置变量集合，而不需要一项一项的添加和修改。
 app.config.from_object(DevConfig)
 
+# 导入视图函数
+views = __import__('views')
+
 # 路由规则
-@app.route('/')
-def home():
-    return '<h1>Hello,world<h1>'
+# @app.route('/')
+# def home():
+#     return '<h1>Hello,world<h1>'
 
 if __name__ == '__main__':
     # 启动程序
