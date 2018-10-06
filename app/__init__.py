@@ -8,22 +8,29 @@
 @desc: 主入口文件
 '''
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 from config import DevConfig
+from models import db
+from controllers import blog
 
 app = Flask(__name__)
 
 # 从配置类中获取配置文件，使用from_object()
 # 不使用 app.config['DEBUG'] 是因为这样可以加载 class DevConfig 的配置变量集合，而不需要一项一项的添加和修改。
 app.config.from_object(DevConfig)
+db.init_app(app)
+# 导入视图函数——有蓝本后不再需要
+# views = __import__('views')
 
-# 导入视图函数
-views = __import__('views')
 
-# 路由规则
-# @app.route('/')
-# def home():
-#     return '<h1>Hello,world<h1>'
+# 加了蓝本后，必须要有一个入口app
+@app.route('/')
+def index():
+    return redirect(url_for('blog.home'))
+
+
+# 注册蓝本
+app.register_blueprint(blog.blog_blueprint)
 
 if __name__ == '__main__':
     # 启动程序

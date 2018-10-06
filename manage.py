@@ -10,15 +10,15 @@
 '''
 
 from flask_script import Manager, Server
-import main
-import models
+from app import models
 from flask_migrate import Migrate, MigrateCommand
+from app import app
 
 # 使用程序app实例来初始化manage对象
-manager = Manager(main.app)
+manager = Manager(app)
 
 # 构造一个管理数据库迁移的对象migrate
-migrate = Migrate(main.app, models.db)
+migrate = Migrate(app, models.db)
 
 # 通过Server构建一个命令行的对象，方便操作环境
 manager.add_command("server", Server())
@@ -36,7 +36,7 @@ def make_shell_context():
     """
     # 确保有导入 Flask app object，否则启动的 CLI 上下文中仍然没有 app 对象
     # 在这里返回的dict中的值，便可以在shell中调用
-    return dict(app=main.app, db=models.db, User=models.User, Post=models.Post, Comment=models.Comment, Tag=models.Tag)
+    return dict(app=app, db=models.db, User=models.User, Post=models.Post, Comment=models.Comment, Tag=models.Tag)
 
 if __name__ == '__main__':
     manager.run()

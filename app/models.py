@@ -9,9 +9,10 @@
 '''
 
 from flask_sqlalchemy import SQLAlchemy
-from main import app
+# from __init__ import app
 
-db = SQLAlchemy(app)
+# 数据库初始化迁移迁移到init中
+db = SQLAlchemy()
 
 
 class User(db.Model):
@@ -20,7 +21,6 @@ class User(db.Model):
     id = db.Column(db.String(45), primary_key=True)
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
-    text = db.Column(db.String(255))
 
     # 定义被参照关系
     posts = db.relationship('Post', backref='users', lazy='dynamic')
@@ -62,7 +62,8 @@ class Post(db.Model):
     # 关联的被参考关系：posts/tags多对多
     tags = db.relationship('Tag', secondary=posts_tags, backref=db.backref('posts', lazy='dynamic'))
 
-    def __init__(self, title):
+    def __init__(self, id, title):
+        self.id = id
         self.title = title
 
     def __repr__(self):
@@ -75,7 +76,8 @@ class Tag(db.Model):
     id = db.Column(db.String(45), primary_key=True)
     name = db.Column(db.String(255))
 
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id = id
         self.name = name
 
     def __repr__(self):
@@ -93,7 +95,8 @@ class Comment(db.Model):
     # 外键
     post_id = db.Column(db.String(45), db.ForeignKey('posts.id'))
 
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id = id
         self.name = name
 
     def __repr__(self):
