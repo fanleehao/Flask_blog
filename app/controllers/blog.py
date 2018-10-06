@@ -8,12 +8,12 @@
 @desc: blog博客展示页的单独模块蓝本
 '''
 
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, redirect, url_for
 from sqlalchemy import func  # 数据库操作中的一些库函数
 import os
 
 from app.models import db, User, Post, Comment, Tag, posts_tags
-from app.forms import CommentForm
+from app.forms import CommentForm, PostForm
 from uuid import uuid4
 import datetime
 
@@ -62,6 +62,43 @@ def user(username):
     posts = user.posts.order_by(Post.publish_date.desc()).all()
     recent, top_tags = slider_bar()
     return render_template('user.html', user=user, posts=posts, recent=recent, top_tags=top_tags)
+
+
+@blog_blueprint.route('/new', methods=['GET', 'POST'])
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        newpost = Post(str(uuid4()), title=form.title.data)
+        newpost.text = form.text.data
+        newpost.publish_date = datetime.datetime.now()
+
+        db.session.add(newpost)
+        db.session.commit()
+        return redirect(url_for('blog.home'))
+
+    return render_template('new_post.html', form=form)
+
+
+@blog_blueprint.route('/edit/<string:id>', methods=['GET', 'POST'])
+def edit_post(id):
+    """View function for edit_post."""
+
+    post = Post.query.get_or_404(id)
+    form = PostForm()
+
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.text = form.text.data
+        post.publish_date = datetime.datetime.now()
+
+        # Update the post
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('blog.post', post_id=post.id))
+
+    form.title.data = post.title
+    form.text.data = post.text
+    return render_template('edit_post.html', form=form, post=post)
 
 
 def slider_bar():

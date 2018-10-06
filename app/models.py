@@ -9,7 +9,7 @@
 '''
 
 from flask_sqlalchemy import SQLAlchemy
-# from __init__ import app
+from extensions import bcrypt
 
 # 数据库初始化迁移迁移到init中
 db = SQLAlchemy()
@@ -33,13 +33,19 @@ class User(db.Model):
         # 修改
         self.id = id
         self.username = username
-        self.password = password
+        self.password = self.set_password(password)
 
     def __repr__(self):
         # 返回这个对象的字符串表示，而不是格式化的
         # 返回的是字符串表达式，可以使用eval处理
         # 与repr()类似, 将对象转化为便于供Python解释器读取的形式, 返回一个可以用来表示对象的可打印字符串.
         return "<Model User `{}`>".format(self.username)
+
+    def set_password(self, password):
+        return bcrypt.generate_password_hash(password)
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
 
 # 关联关系的定义

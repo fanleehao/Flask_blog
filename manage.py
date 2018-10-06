@@ -12,7 +12,14 @@
 from flask_script import Manager, Server
 from app import models
 from flask_migrate import Migrate, MigrateCommand
-from app import app
+from app import create_app
+import os
+
+
+env = os.environ.get('BLOG_ENV', 'dev')
+app = create_app('app.config.%sConfig' % env.capitalize())
+
+
 
 # 使用程序app实例来初始化manage对象
 manager = Manager(app)
